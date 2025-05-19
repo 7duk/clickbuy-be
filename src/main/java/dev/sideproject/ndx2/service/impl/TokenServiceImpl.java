@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Slf4j
@@ -37,16 +39,34 @@ public class TokenServiceImpl implements TokenService {
     final AccountRepository accountRepository;
 
     @Override
-    public String createToken(Long id, String email, TokenType tokenType, LocalDateTime issuedAt, LocalDateTime expiration) {
+    public String createToken(Long id, String email, TokenType tokenType, int expirationHours) {
+        ZonedDateTime now = ZonedDateTime.now();
+        Instant issuedAt = now.toInstant();
+        Instant expireAt = now.plusHours(expirationHours).toInstant();
         Map<String, Object> claims = new HashMap<>();
         claims.put(Claims.SUBJECT, id);
         claims.put(Claims.AUDIENCE, email);
-        claims.put(Claims.ID, UUID.randomUUID());
+        claims.put(Claims.ID, UUID.randomUUID().toString());
         claims.put(CLAIM_TOKEN_TYPE, tokenType);
-        claims.put(Claims.ISSUED_AT, issuedAt);
+        claims.put(Claims.ISSUED_AT, Date.from(issuedAt));
         claims.put(Claims.ISSUER, jwtIssuer);
-        claims.put(Claims.EXPIRATION, expiration);
+        claims.put(Claims.EXPIRATION, Date.from(expireAt));
         return Jwts.builder().claims(claims).signWith(secretKey).compact();
+    }
+
+    @Override
+    public <T> T getClaim(String token, String key, Class<T> requiredType) {
+        Claims claims = extractClaims(token);
+        return switch (key) {
+            case Claims.SUBJECT -> claims.get(Claims.SUBJECT, requiredType);
+            case Claims.AUDIENCE -> claims.get(Claims.AUDIENCE, requiredType);
+            case Claims.ID -> claims.get(Claims.ID, requiredType);
+            case Claims.ISSUED_AT -> claims.get(Claims.ISSUED_AT, requiredType);
+            case Claims.ISSUER -> claims.get(Claims.ISSUER, requiredType);
+            case Claims.EXPIRATION -> claims.get(Claims.EXPIRATION, requiredType);
+            case CLAIM_TOKEN_TYPE -> claims.get(CLAIM_TOKEN_TYPE, requiredType);
+            default -> throw new IllegalStateException("unexpected value: " + key);
+        };
     }
 
     @Override
@@ -55,6 +75,26 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+    public boolean pushToBlackList(UUID jit) {
+        return backListJIT.add(jit);
+    }
+
+    @Override
+    public boolean isValid(String token) {
+        Claims claims = extractClaims(token);
+        if (isInvalidTokenType(claims)) return false;
+        if (!isValidIssuer(claims)) return false;
+        if (isExpired(token)) return false;
+        if (isUsed(token)) return false;
+        UUID jti = claims.get(Claims.ID, UUID.class);
+        if (isContain(jti)) return false;
+        return true;
+    }
+
+    public boolean isContain(UUID jit) {
+        return backListJIT.contains(jit);
+    }
+
     public boolean isUsed(String token) {
         Claims claims = extractClaims(token);
         UUID jit = claims.get(Claims.ID, UUID.class);
@@ -65,31 +105,10 @@ public class TokenServiceImpl implements TokenService {
         return isContain(jit);
     }
 
-    @Override
     public boolean isExpired(String token) {
         Claims claims = extractClaims(token);
-        LocalDateTime expiration = claims.get(Claims.EXPIRATION, LocalDateTime.class);
-        return expiration.isBefore(LocalDateTime.now());
-    }
-
-    @Override
-    public boolean pushToBlackList(UUID jit) {
-        return backListJIT.add(jit);
-    }
-
-    public boolean isContain(UUID jit) {
-        return backListJIT.contains(jit);
-    }
-
-    @Override
-    public boolean isValid(String token) {
-        Claims claims = extractClaims(token);
-
-        if (isInvalidTokenType(claims)) return false;
-        if (!isValidIssuer(claims)) return false;
-        if (!isExistingAccount(claims)) return false;
-
-        return true;
+        Date expiration = claims.get(Claims.EXPIRATION, Date.class);
+        return expiration.before(Date.from(Instant.now()));
     }
 
     private boolean isInvalidTokenType(Claims claims) {

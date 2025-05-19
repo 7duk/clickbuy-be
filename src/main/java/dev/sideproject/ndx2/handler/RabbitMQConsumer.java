@@ -23,9 +23,9 @@ public class RabbitMQConsumer {
     final MailService mailService;
     final ObjectMapper objectMapper;
 
-    @RabbitListener(queues = "${rabbitmq.queue.name}",containerFactory = "rabbitListenerContainerFactory")
+    @RabbitListener(queues = "${rabbitmq.queue.verify_queue}",containerFactory = "rabbitListenerContainerFactory")
     public void receiveMessage(Message message) throws MessagingException, JsonProcessingException {
-        log.info("Consumer received message at {}.", LocalDateTime.now());
+        log.info("consumer received message at {}.", LocalDateTime.now());
         String rawBody = new String(message.getBody(), StandardCharsets.UTF_8);
         processMessage(rawBody);
     }

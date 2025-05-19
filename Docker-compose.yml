@@ -1,7 +1,7 @@
 services:
   mysql:
     image: mysql:latest
-    container_name: mysql
+    container_name: sd-mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: sideproject
@@ -33,7 +33,7 @@ services:
 #      - mysql
   rabbit_mq:
     image: rabbitmq:3-management
-    container_name: rabbit_mq
+    container_name: sd-rabbit_mq
     ports:
       - "5672:5672"
       - "15672:15672"

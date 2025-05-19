@@ -1,10 +1,7 @@
 package dev.sideproject.ndx2.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Exchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -20,9 +17,6 @@ public class RabbitConfiguration {
     @Value("${rabbitmq.host}")
     String rabbitMqHost;
 
-    @Value("${rabbitmq.queue.name}")
-    String rabbitMqQueueName;
-
     @Value("${rabbitmq.username}")
     String rabbitMqUsername;
 
@@ -31,6 +25,12 @@ public class RabbitConfiguration {
 
     @Value("${rabbitmq.exchange.name}")
     String rabbitMqExchangeName;
+
+    @Value("${rabbitmq.queue.verify_queue}")
+    String mailVerifyQueueName;
+
+    @Value("${rabbitmq.verify_rtkey}")
+    String mailVerifyRoutingKey;
 
     @Bean
     public CachingConnectionFactory connectionFactory() {
@@ -51,29 +51,25 @@ public class RabbitConfiguration {
     }
 
     @Bean
-    public Queue myQueue() {
-        return new Queue(rabbitMqQueueName);
+    public Queue mailVerifyQueue() {
+        return new Queue(mailVerifyQueueName);
     }
 
     @Bean
-    public Exchange exchange() {
+    public Binding emailBinding(Queue mailVerifyQueue, DirectExchange directExchange) {
+        return BindingBuilder.bind(mailVerifyQueue).to(directExchange).with(mailVerifyRoutingKey);
+    }
+    @Bean
+    public DirectExchange directExchange() {
         return new DirectExchange(rabbitMqExchangeName);
     }
-
-//    @Bean
-//    public DirectMessageListenerContainer rabbitListenerContainer() {
-//        DirectMessageListenerContainer container = new DirectMessageListenerContainer();
-//        container.addQueueNames(rabbitMqQueueName);
-//        container.setConnectionFactory(connectionFactory());
-//        return container;
-//    }
 
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(CachingConnectionFactory connectionFactory) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
-        factory.setDefaultRequeueRejected(false);
+        factory.setDefaultRequeueRejected(true);
         return factory;
     }
 

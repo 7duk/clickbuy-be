@@ -49,7 +49,7 @@ public class JwtProcesser {
      */
     @Bean
     public JwtEncoder jwtEncoder() {
-        log.info("Secret Key Of System: {}", secretKeyStr);
+        log.info("secret Key Of System: {}", secretKeyStr);
         byte[] keyBytes = secretKeyStr.getBytes(StandardCharsets.UTF_8);
         SecretKey secretKey = new SecretKeySpec(keyBytes, "HmacSHA256");
 

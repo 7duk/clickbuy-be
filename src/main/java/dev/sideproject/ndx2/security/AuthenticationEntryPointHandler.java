@@ -20,7 +20,7 @@ public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint
    final ObjectMapper objectMapper;
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        log.error("Authentication exception: {}", authException.getMessage());
+        log.error("authentication exception: {}", authException.getMessage());
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .code(ErrorCode.UN_AUTHENTICATED.getHttpStatus().value())
                 .message(authException.getMessage()).build();

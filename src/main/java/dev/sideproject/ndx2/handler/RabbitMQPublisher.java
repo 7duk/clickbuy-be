@@ -2,12 +2,13 @@ package dev.sideproject.ndx2.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.sideproject.ndx2.dto.AccountDto;
+import dev.sideproject.ndx2.dto.AccountResponse;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import lombok.AccessLevel;
@@ -28,10 +29,13 @@ public class RabbitMQPublisher {
     final RabbitTemplate rabbitTemplate;
     static final int MAX_RETRIES = 3;
     static final long RETRY_DELAY_MS = 3000;
-
-    final Map<String, MessageData<AccountDto>> retryData = new ConcurrentHashMap<>();
+    final Map<String, MessageData<AccountResponse>> retryData = new ConcurrentHashMap<>();
     final Map<String, Integer> retryCountMap = new ConcurrentHashMap<>();
     final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    @Value("${rabbitmq.exchange.name}")
+    String rabbitMqExchangeName;
+    @Value("${rabbitmq.verify_rtkey}")
+    String mailVerifyRoutingKey;
 
 
     public RabbitMQPublisher(RabbitTemplate rabbitTemplate, ObjectMapper objectMapper) {
@@ -41,44 +45,45 @@ public class RabbitMQPublisher {
                 (CorrelationData correlationData, boolean ack, String cause) -> {
                     String id = correlationData != null ? correlationData.getId() : "unknown";
                     if (ack) {
-                        log.info("Publisher sent message successfully at : {}", LocalDateTime.now());
+                        log.info("publisher sent message successfully at : {}", LocalDateTime.now());
                         retryCountMap.remove(id);
                         retryData.remove(id);
                     } else {
-                        log.error("Publisher sent message failed at : {} because {}", LocalDateTime.now(), cause);
+                        log.error("publisher sent message failed at : {} because {}", LocalDateTime.now(), cause);
                         retry(id);
                     }
                 }
         );
         rabbitTemplate.setReturnsCallback((returnedMessage) -> {
-            log.warn("Publisher returned message because: {}", returnedMessage.getReplyText());
+            log.warn("publisher returned message because: {}", returnedMessage.getReplyText());
         });
     }
 
-    public void sendMessage(String messageId, AccountDto accountDto) throws JsonProcessingException {
-        String msgConverted = objectMapper.writeValueAsString(accountDto);
+    public void sendMessage(String messageId, AccountResponse accountResponse) throws JsonProcessingException {
+        log.info("publisher is starting send message with message_id:{}", messageId);
+        String msgConverted = objectMapper.writeValueAsString(accountResponse);
         Message msg = new Message(msgConverted.getBytes(StandardCharsets.UTF_8));
         CorrelationData correlationData = new CorrelationData(messageId);
-        retryData.put(messageId, new MessageData<AccountDto>(messageId, accountDto, rabbitTemplate.getExchange(), rabbitTemplate.getRoutingKey()));
-        rabbitTemplate.send(rabbitTemplate.getExchange(), rabbitTemplate.getRoutingKey(), msg, correlationData);
+        retryData.put(messageId, new MessageData<AccountResponse>(messageId, accountResponse, rabbitTemplate.getExchange(), rabbitTemplate.getRoutingKey()));
+        rabbitTemplate.send(rabbitMqExchangeName, mailVerifyRoutingKey, msg, correlationData);
     }
 
     public void retry(String messageId) {
         int retryCount = retryCountMap.getOrDefault(messageId, 0);
         if (retryCount < MAX_RETRIES) {
             retryCountMap.put(messageId, retryCount + 1);
-            log.warn("Publisher retry attempt {} for message {}", retryCount + 1, messageId);
+            log.warn("publisher retry attempt {} for message {}", retryCount + 1, messageId);
             MessageData messageData = retryData.get(messageId);
             scheduler.schedule(() -> {
                 try {
-                    sendMessage(messageData.getCorrelationDataId(), (AccountDto) messageData.getData());
+                    sendMessage(messageData.getCorrelationDataId(), (AccountResponse) messageData.getData());
                 } catch (JsonProcessingException e) {
-                    log.warn("Publisher retry processing failed because: {}", e.getMessage());
+                    log.warn("publisher retry processing failed because: {}", e.getMessage());
                     throw new RuntimeException(e);
                 }
             }, RETRY_DELAY_MS, TimeUnit.MILLISECONDS);
         } else {
-            log.error("Publisher retry exhausted for message {}", messageId);
+            log.error("publisher retry exhausted for message {}", messageId);
             retryCountMap.remove(messageId);
         }
     }

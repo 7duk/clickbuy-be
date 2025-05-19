@@ -1,7 +1,11 @@
 package dev.sideproject.ndx2.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import dev.sideproject.ndx2.dto.AccountDto;
+import dev.sideproject.ndx2.constant.TokenType;
+import dev.sideproject.ndx2.dto.AccountResponse;
+import dev.sideproject.ndx2.dto.AuthResponse;
+import dev.sideproject.ndx2.dto.LoginRequest;
+import dev.sideproject.ndx2.dto.RegisterRequest;
 import dev.sideproject.ndx2.entity.Account;
 import dev.sideproject.ndx2.constant.Role;
 import dev.sideproject.ndx2.exception.AppException;
@@ -11,12 +15,11 @@ import dev.sideproject.ndx2.repository.AccountRepository;
 import dev.sideproject.ndx2.service.AccountService;
 import dev.sideproject.ndx2.service.BaseService;
 import dev.sideproject.ndx2.service.TokenService;
+import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,16 +46,16 @@ public class AccountServiceImpl extends BaseService<Account, Long> implements Ac
     }
 
     @Override
-    public AccountDto register(AccountDto accountDto) throws JsonProcessingException {
-        String passwordHashed = passwordEncoder.encode(accountDto.getPassword());
+    public AccountResponse register(RegisterRequest registerRequest) throws JsonProcessingException {
+        String passwordHashed = passwordEncoder.encode(registerRequest.getPassword());
 
         Account createdByAccount = accountRepository.findById(1L)
                 .orElse(new Account());
 
         Account accountMapped = Account.builder()
-                .email(accountDto.getEmail())
-                .fullName(accountDto.getFullName())
-                .username(accountDto.getUsername())
+                .email(registerRequest.getEmail())
+                .fullName(registerRequest.getFullName())
+                .username(registerRequest.getUsername())
                 .password(passwordHashed)
                 .createdBy(createdByAccount)
                 .role(Role.GUEST).build();
@@ -61,7 +64,7 @@ public class AccountServiceImpl extends BaseService<Account, Long> implements Ac
 
         if (accountSavedOptional.isPresent()) {
             Account accountSaved = accountSavedOptional.get();
-            AccountDto accountDtoResponse = AccountDto.builder()
+            AccountResponse accountDtoResponse = AccountResponse.builder()
                     .id(accountSaved.getId())
                     .username(accountSaved.getUsername())
                     .fullName(accountSaved.getFullName())
@@ -71,17 +74,67 @@ public class AccountServiceImpl extends BaseService<Account, Long> implements Ac
                     .lastModifiedAt(accountSaved.getUpdatedAt())
                     .lastModifiedBy(Objects.isNull(accountSaved.getUpdatedBy()) ? null : accountSaved.getUpdatedBy().getId())
                     .build();
-            rabbitMQPublisher.sendMessage(UUID.randomUUID().toString(),accountDtoResponse);
+            rabbitMQPublisher.sendMessage(UUID.randomUUID().toString(), accountDtoResponse);
             return accountDtoResponse;
         } else {
             ErrorCode errorCode = ErrorCode.REGISTER_FAILED;
-            log.error("Account {} - account not saved", errorCode.getMessage());
+            log.error("account {} - account not saved", errorCode.getMessage());
             throw new AppException(errorCode);
         }
     }
 
     @Override
-    public void verify(String token) {
+    public AuthResponse login(LoginRequest loginRequest) {
+        Account account = accountRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> {
+                    ErrorCode errorCode = ErrorCode.ACCOUNT_DOES_NOT_EXIST;
+                    log.error("{} with username: {}", errorCode.getMessage(), loginRequest.getUsername());
+                    throw new AppException(errorCode);
+                });
+        if (!passwordEncoder.matches(loginRequest.getPassword(), account.getPassword())) {
+            ErrorCode errorCode = ErrorCode.PASSWORD_INVALID;
+            log.error("{} with username: {} and password: {} provided", errorCode.getMessage(), loginRequest.getUsername(), loginRequest.getPassword());
+            throw new AppException(errorCode);
+        }
+        String accessToken = tokenService.createToken(account.getId(), account.getEmail(), TokenType.ACCESS, 1);
+        String refreshToken = tokenService.createToken(account.getId(), account.getEmail(), TokenType.REFRESH, 24);
+        AuthResponse authResponse = AuthResponse.builder().accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .id(account.getId())
+                .username(account.getUsername())
+                .fullName(account.getFullName())
+                .email(account.getEmail())
+                .createdAt(account.getCreatedAt())
+                .createdBy(account.getCreatedBy().getId())
+                .lastModifiedAt(account.getUpdatedAt())
+                .lastModifiedBy(Objects.isNull(account.getUpdatedBy()) ? null : account.getUpdatedBy().getId())
+                .build();
+        return authResponse;
+    }
 
+    @Override
+    public void verify(String token) {
+        if (tokenService.isValid(token)) {
+            ErrorCode errorCode = ErrorCode.TOKEN_INVALID;
+            log.error("{} with token value '{}' ", errorCode.getMessage(), token);
+            throw new AppException(errorCode);
+        }
+        Long id = tokenService.getClaim(token, Claims.SUBJECT, Long.class);
+        String email = tokenService.getClaim(token, Claims.AUDIENCE, String.class);
+        if (accountRepository.existsByIdAndEmail(id, email)) {
+            Account account = accountRepository.findById(id).get();
+            if (!Objects.equals(account.getRole(), Role.GUEST)) {
+                ErrorCode errorCode = ErrorCode.TOKEN_INVALID;
+                log.error(errorCode.getMessage());
+                throw new AppException(errorCode);
+            }
+            accountRepository.updateRoleById(id, Role.USER);
+            UUID jti = tokenService.getClaim(token, Claims.ID, UUID.class);
+            tokenService.pushToBlackList(jti);
+        } else {
+            ErrorCode errorCode = ErrorCode.ACCOUNT_DOES_NOT_EXIST;
+            log.error("{} with id:{} - mail{}", errorCode.getMessage(), id, email);
+            throw new AppException(errorCode);
+        }
     }
 }

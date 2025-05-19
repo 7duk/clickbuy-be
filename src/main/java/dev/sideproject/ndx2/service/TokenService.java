@@ -8,10 +8,9 @@ import java.util.UUID;
 
 public interface TokenService {
     String createToken(Long id, String email, TokenType tokenType,
-                       LocalDateTime issuedAt, LocalDateTime expiration);
+                       int expirationHours);
     Claims extractClaims(String token);
-    boolean isUsed(String token);
-    boolean isExpired(String token);
+    <T> T getClaim(String token, String key, Class<T> requiredType);
     boolean pushToBlackList(UUID token);
     boolean isValid(String token);
 }

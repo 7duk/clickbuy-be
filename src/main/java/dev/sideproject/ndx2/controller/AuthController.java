@@ -1,8 +1,7 @@
 package dev.sideproject.ndx2.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import dev.sideproject.ndx2.dto.AccountDto;
-import dev.sideproject.ndx2.dto.SuccessResponse;
+import dev.sideproject.ndx2.dto.*;
 import dev.sideproject.ndx2.service.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -53,11 +52,21 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<SuccessResponse> register(@Valid @RequestBody AccountDto accountDto) throws JsonProcessingException {
-        AccountDto accountDtoCreated = accountService.register(accountDto);
+    public ResponseEntity<SuccessResponse> register(@Valid @RequestBody RegisterRequest registerRequest) throws JsonProcessingException {
+        AccountResponse accountDtoCreated = accountService.register(registerRequest);
+        int code = HttpStatus.CREATED.value();
+        SuccessResponse successResponse = SuccessResponse.builder()
+                .message("created successfully.").data(accountDtoCreated)
+                .code(code).build();
+        return ResponseEntity.status(code).body(successResponse);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<SuccessResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        AuthResponse authResponse = accountService.login(loginRequest);
         int code = HttpStatus.OK.value();
         SuccessResponse successResponse = SuccessResponse.builder()
-                .message("Created successfully.").data(accountDtoCreated)
+                .message("login successfully.").data(authResponse)
                 .code(code).build();
         return ResponseEntity.status(code).body(successResponse);
     }

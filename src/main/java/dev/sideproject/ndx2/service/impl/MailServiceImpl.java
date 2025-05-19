@@ -33,9 +33,8 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendHtmlVerificationMail(AccountDto accountDto) throws MessagingException {
-        LocalDateTime issueAt = LocalDateTime.now();
         String verificationToken = tokenService.createToken(accountDto.getId(), accountDto.getEmail(),
-                TokenType.EMAIL_VERIFICATION,issueAt, issueAt.plusDays(1));
+                TokenType.EMAIL_VERIFICATION,24);
         String verificationLink= String.format("%s?token=%s", verificationUrl, verificationToken);
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();

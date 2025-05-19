@@ -28,7 +28,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByUsername(username)
                 .orElseThrow(()-> new UsernameNotFoundException("Account doesn't exists with username: " + username));
-        log.info("Account: username={}, password={}, role = {} ", username, account.getPassword(), account.getRole());
+        log.info("account: username={}, password={}, role = {} ", username, account.getPassword(), account.getRole());
         return new UserDetails() {
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -22,7 +22,7 @@ public class AccessDeniedHandler implements org.springframework.security.web.acc
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        log.error("Authorize exception: {}", accessDeniedException.getMessage());
+        log.error("authorize exception: {}", accessDeniedException.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder().
                 code(ErrorCode.UN_AUTHORIZED.getHttpStatus().value())

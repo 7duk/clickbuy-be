@@ -1,0 +1,39 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sideproject
+      MYSQL_USERNAME: sideproject
+      MYSQL_PASSWORD: sideproject
+    ports:
+      - "3308:3306"
+    restart: unless-stopped
+    volumes:
+      - backend_volume:/var/lib/mysql
+    networks:
+      - backend_network
+
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    ports:
+      - "8888:8080"
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    networks:
+      - backend_network
+    depends_on:
+      - mysql
+
+volumes:
+    backend_volume:
+
+networks:
+    backend_network:
+
+

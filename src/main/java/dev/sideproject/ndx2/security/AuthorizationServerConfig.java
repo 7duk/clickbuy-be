@@ -27,6 +27,8 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,7 +41,7 @@ public class AuthorizationServerConfig {
     @Value("${oauth2.redirect-url}")
     String redirectEndpoint;
 
-    String prefixRole = "ROLE_";
+    final String prefixRole = "ROLE_";
 
     @Bean(name = "authorizationFilterChain")
     @Order(1)
@@ -93,7 +95,26 @@ public class AuthorizationServerConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return super.encode(rawPassword);
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                return super.matches(rawPassword, encodedPassword);
+            }
+        };
+        encoders.put("bcrypt", encoder);
+        encoders.put("noop", NoOpPasswordEncoder.getInstance());
+
+        DelegatingPasswordEncoder delegatingEncoder = new DelegatingPasswordEncoder("bcrypt", encoders);
+
+        delegatingEncoder.setDefaultPasswordEncoderForMatches(encoder);
+
+        return delegatingEncoder;
     }
 
     @Bean

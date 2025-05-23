@@ -20,7 +20,7 @@ CREATE TABLE `account` (
 insert into sideproject.account(id,username,password,role,email,created_at,created_by)
 values
     (1,'admin','$2a$12$3joiORYYNK1qhbMk7q/PDeqji.MedyFBG.qxLzgl9.eFPyL0MZzWW','ADMIN','ducnguyen.12965@gmail.com',current_timestamp,0),
-    (2,'user1','$2a$12$3joiORYYNK1qhbMk7q/PDeqji.MedyFBG.qxLzgl9.eFPyL0MZzWW','PARTNER','duccris1105@gmail.com',current_timestamp,0);
+    (2,'user1','$2a$12$3joiORYYNK1qhbMk7q/PDeqji.MedyFBG.qxLzgl9.eFPyL0MZzWW','USER','duccris1105@gmail.com',current_timestamp,0);
 
 
 

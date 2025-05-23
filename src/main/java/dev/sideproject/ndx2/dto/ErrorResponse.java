@@ -9,5 +9,5 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ErrorResponse extends Response {
-     String message;
+    String message;
 }

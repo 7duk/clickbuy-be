@@ -4,5 +4,5 @@ databaseChangeLog:
       author: _n.dx2
       changes:
       - sqlFile:
-          path: ../init/initial.sql
+          path: init/initial.sql
           relativeToChangelogFile: true

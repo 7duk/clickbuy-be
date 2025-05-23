@@ -24,7 +24,6 @@ public class GlobalExceptionHandler {
                 .stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
         validationError.setErrors(errors);
         validationError.setCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-        validationError.setTime(LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.OK).body(validationError);
     }
 
@@ -33,7 +32,6 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage(exception.getErrorCode().getMessage());
         errorResponse.setCode(exception.getErrorCode().getHttpStatus().value());
-        errorResponse.setTime(LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
     }
 }

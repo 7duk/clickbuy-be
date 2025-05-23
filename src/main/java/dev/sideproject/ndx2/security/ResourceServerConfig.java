@@ -21,8 +21,11 @@ import java.util.stream.Stream;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ResourceServerConfig {
     static String prefixPath = "/api/v1/";
-    static String[] allowedURLS = Stream.of("health-check")
-            .map(str -> prefixPath + str).toArray(String[]::new);
+    static String[] allowedURLS = Stream.of(
+            "health-check",
+            "/actuator/**",
+            "/oauth2/**"
+    ).map(str -> str.startsWith("/") ? str : prefixPath + str).toArray(String[]::new);
 
 
     JwtDecoder jwtDecoder;
@@ -33,7 +36,7 @@ public class ResourceServerConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .securityMatcher("/api/v1/**")
+                .securityMatcher("/**")
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests.requestMatchers(allowedURLS).permitAll()
                                 .anyRequest().authenticated())

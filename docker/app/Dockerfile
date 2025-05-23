@@ -6,6 +6,4 @@ COPY . .
 
 RUN chmod +x ./gradlew
 
-RUN ./gradlew build -x test --no-daemon
-
-CMD ["./gradlew", "bootRun"]
+CMD ["./gradlew", "bootRun", "--no-daemon"]

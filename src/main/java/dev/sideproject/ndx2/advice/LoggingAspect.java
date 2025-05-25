@@ -1,18 +1,15 @@
-package dev.sideproject.ndx2.handler;
+package dev.sideproject.ndx2.advice;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
 @Aspect
 @Slf4j
-public class LoggingMonitor {
+public class LoggingAspect {
 
     @Before("execution(* dev.sideproject.ndx2..*(..))")
     public void beforeStarting(JoinPoint joinPoint) {

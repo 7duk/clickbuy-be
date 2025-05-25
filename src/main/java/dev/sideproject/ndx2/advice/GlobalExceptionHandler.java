@@ -1,6 +1,5 @@
 package dev.sideproject.ndx2.advice;
 
-import dev.sideproject.ndx2.dto.ErrorResponse;
 import dev.sideproject.ndx2.dto.ValidationError;
 import dev.sideproject.ndx2.exception.AppException;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -20,18 +18,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {
         ValidationError validationError = new ValidationError();
+
         Map<String, String> errors = exception.getBindingResult().getFieldErrors()
-                .stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
+                .stream().collect(Collectors.
+                        toMap(FieldError::getField, FieldError::getDefaultMessage));
+
         validationError.setErrors(errors);
         validationError.setCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-        return ResponseEntity.status(HttpStatus.OK).body(validationError);
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationError);
     }
 
     @ExceptionHandler(value = AppException.class)
     public ResponseEntity<?> handleAppException(final AppException exception) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setMessage(exception.getErrorCode().getMessage());
-        errorResponse.setCode(exception.getErrorCode().getHttpStatus().value());
-        return ResponseEntity.status(HttpStatus.OK).body(errorResponse);
+        return ResponseEntity.status(exception.getHttpStatus())
+                .body(exception.toResponse());
     }
 }

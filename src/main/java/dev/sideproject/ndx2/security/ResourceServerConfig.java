@@ -31,8 +31,8 @@ public class ResourceServerConfig {
     JwtDecoder jwtDecoder;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAccessDeniedHandler jwtAccessDeniedHandler,
-                                                   JwtAuthenticationEntryPointHandler jwtAuthenticationEntryPointHandler) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AccessDeniedHandler jwtAccessDeniedHandler,
+                                                   AuthenticationEntryPointHandler jwtAuthenticationEntryPointHandler) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())

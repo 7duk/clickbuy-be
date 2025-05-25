@@ -31,6 +31,18 @@ services:
 #      - backend_network
 #    depends_on:
 #      - mysql
+  rabbit_mq:
+    image: rabbitmq:3-management
+    container_name: rabbit_mq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbit
+      RABBITMQ_DEFAULT_PASS: pass
+    restart: unless-stopped
+    networks:
+      - backend_network
 
 volumes:
     backend_volume:

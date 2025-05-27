@@ -9,6 +9,7 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,6 +59,14 @@ public class RabbitConfiguration {
     public Exchange exchange() {
         return new DirectExchange(rabbitMqExchangeName);
     }
+
+//    @Bean
+//    public DirectMessageListenerContainer rabbitListenerContainer() {
+//        DirectMessageListenerContainer container = new DirectMessageListenerContainer();
+//        container.addQueueNames(rabbitMqQueueName);
+//        container.setConnectionFactory(connectionFactory());
+//        return container;
+//    }
 
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(CachingConnectionFactory connectionFactory) {

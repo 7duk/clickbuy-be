@@ -1,21 +1,22 @@
 package dev.sideproject.ndx2.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @ToString
 @Builder
-public class AccountDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class AccountDto implements Serializable {
     @JsonProperty(value = "id",
             access = JsonProperty.Access.READ_ONLY)
     Long id;
@@ -33,10 +34,12 @@ public class AccountDto {
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     String email;
     @JsonProperty(value = "created_at", access = JsonProperty.Access.READ_ONLY)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdAt;
     @JsonProperty(value = "created_by", access = JsonProperty.Access.READ_ONLY)
     Long createdBy;
     @JsonProperty(value = "last_modified_at", access = JsonProperty.Access.READ_ONLY)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime lastModifiedAt;
     @JsonProperty(value = "last_modified_by", access = JsonProperty.Access.READ_ONLY)
     Long lastModifiedBy;

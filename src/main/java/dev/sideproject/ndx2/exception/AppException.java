@@ -10,14 +10,15 @@ public class AppException extends RuntimeException {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
-    public ErrorResponse toResponse(){
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setMessage(errorCode.getMessage().toUpperCase());
-        errorResponse.setCode(errorCode.getHttpStatus().value());
+
+    public ErrorResponse toResponse() {
+        ErrorResponse errorResponse = ErrorResponse.builder().
+                message(errorCode.getMessage().toUpperCase()).
+                code(errorCode.getHttpStatus().value()).build();
         return errorResponse;
     }
 
-    public HttpStatus getHttpStatus(){
+    public HttpStatus getHttpStatus() {
         return errorCode.getHttpStatus();
     }
 }

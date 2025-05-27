@@ -17,14 +17,12 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {
-        ValidationError validationError = new ValidationError();
-
         Map<String, String> errors = exception.getBindingResult().getFieldErrors()
                 .stream().collect(Collectors.
                         toMap(FieldError::getField, FieldError::getDefaultMessage));
-
-        validationError.setErrors(errors);
-        validationError.setCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+        ValidationError validationError = ValidationError.builder().
+                errors(errors).
+                code(HttpStatus.UNPROCESSABLE_ENTITY.value()).build();
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationError);
     }

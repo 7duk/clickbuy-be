@@ -19,13 +19,15 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AccessDeniedHandler implements org.springframework.security.web.access.AccessDeniedHandler {
     ObjectMapper objectMapper;
+
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         log.error("Authorize exception: {}", accessDeniedException.getMessage());
 
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setCode(ErrorCode.UN_AUTHORIZED.getHttpStatus().value());
-        errorResponse.setMessage(accessDeniedException.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.builder().
+                code(ErrorCode.UN_AUTHORIZED.getHttpStatus().value())
+                .message(accessDeniedException.getMessage()).build();
+
         response.setContentType("application/json");
         response.setStatus(HttpStatus.OK.value());
 

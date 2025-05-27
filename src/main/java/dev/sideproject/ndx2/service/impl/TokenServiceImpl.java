@@ -104,7 +104,7 @@ public class TokenServiceImpl implements TokenService {
     private boolean isExistingAccount(Claims claims) {
         String id = claims.get(Claims.SUBJECT, String.class);
         String email = claims.get(Claims.AUDIENCE, String.class);
-        return accountRepository.existByIdAndEmail(id, email);
+        return accountRepository.existsByIdAndEmail(Long.parseLong(id), email);
     }
 
 }

@@ -24,7 +24,8 @@ public class ResourceServerConfig {
     static String[] allowedURLS = Stream.of(
             "health-check",
             "/actuator/**",
-            "/oauth2/**"
+            "/oauth2/**",
+            "/auth/**"
     ).map(str -> str.startsWith("/") ? str : prefixPath + str).toArray(String[]::new);
 
 

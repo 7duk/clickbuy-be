@@ -2,8 +2,10 @@ package dev.sideproject.ndx2.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.sideproject.ndx2.dto.*;
-import dev.sideproject.ndx2.service.AccountService;
+import dev.sideproject.ndx2.service.AuthService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,52 +23,30 @@ import java.util.Base64;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class AuthController {
-    final RestTemplate restTemplate;
-    final AccountService accountService;
-
-    @GetMapping("/callback")
-    public ResponseEntity<?> callback(@RequestParam("code") String code,
-                                      HttpServletRequest request) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        // Thêm Basic Authentication
-        String credentials = Base64.getEncoder()
-                .encodeToString("client-id:client-secret".getBytes());
-        headers.set("Authorization", "Basic " + credentials);
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", "authorization_code");
-        body.add("code", code);
-        body.add("redirect_uri", "http://localhost:8080/oauth2/callback");
-
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-
-        ResponseEntity<Object> response = restTemplate.postForEntity(
-                "http://localhost:8080/oauth2/token", requestEntity, Object.class);
-        SuccessResponse successResponse = SuccessResponse.builder().
-                message("Get Token Succeed!").
-                code(HttpStatus.OK.value()).data(response.getBody()).build();
-        return ResponseEntity.ok(successResponse);
-
-    }
+    final AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<SuccessResponse> register(@Valid @RequestBody RegisterRequest registerRequest) throws JsonProcessingException {
-        AccountResponse accountDtoCreated = accountService.register(registerRequest);
+        AccountResponse accountDtoCreated = authService.register(registerRequest);
         int code = HttpStatus.CREATED.value();
         SuccessResponse successResponse = SuccessResponse.builder()
-                .message("created successfully.").data(accountDtoCreated)
+                .message("created successfully").data(accountDtoCreated)
                 .code(code).build();
         return ResponseEntity.status(code).body(successResponse);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<SuccessResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        AuthResponse authResponse = accountService.login(loginRequest);
+    public ResponseEntity<SuccessResponse> login(@Valid @RequestBody LoginRequest loginRequest,
+                                                 HttpServletResponse response) {
+        AuthResponse authResponse = authService.login(loginRequest);
+        Cookie cookie = new Cookie("refresh_token", authResponse.getRefreshToken());
+        cookie.setMaxAge(24 * 30 * 60 * 60);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
         int code = HttpStatus.OK.value();
         SuccessResponse successResponse = SuccessResponse.builder()
-                .message("login successfully.").data(authResponse)
+                .message("login successfully").data(authResponse)
                 .code(code).build();
         return ResponseEntity.status(code).body(successResponse);
     }

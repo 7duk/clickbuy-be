@@ -14,7 +14,7 @@ public enum ErrorCode {
     UN_AUTHORIZED("access denied", HttpStatus.FORBIDDEN),
     UN_AUTHENTICATED("unauthorized", HttpStatus.UNAUTHORIZED),
     REGISTER_FAILED("register failed", HttpStatus.INTERNAL_SERVER_ERROR),
-    JTI_IS_NULL("jti must be not null",HttpStatus.INTERNAL_SERVER_ERROR),
+    JTI_IS_INVALID("jti is invalid",HttpStatus.BAD_REQUEST),
     ACCOUNT_DOES_NOT_EXIST("account doesn't exist",HttpStatus.BAD_REQUEST),
     TOKEN_INVALID("token is invalid",HttpStatus.BAD_REQUEST),
     ACCOUNT_VERIFIED("account has already been verified", HttpStatus.BAD_REQUEST),

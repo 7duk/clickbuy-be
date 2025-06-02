@@ -2,7 +2,7 @@ package dev.sideproject.ndx2.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.sideproject.ndx2.dto.AccountDto;
+import dev.sideproject.ndx2.dto.AccountResponse;
 import dev.sideproject.ndx2.service.MailService;
 import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
@@ -31,7 +31,7 @@ public class RabbitMQConsumer {
     }
 
     public void processMessage(String message) throws JsonProcessingException, MessagingException{
-        AccountDto accountDto = objectMapper.readValue(message, AccountDto.class);
+        AccountResponse accountDto = objectMapper.readValue(message, AccountResponse.class);
         mailService.sendHtmlVerificationMail(accountDto);
     }
 }

@@ -13,7 +13,7 @@ public class AppException extends RuntimeException {
 
     public ErrorResponse toResponse() {
         ErrorResponse errorResponse = ErrorResponse.builder().
-                message(errorCode.getMessage().toUpperCase()).
+                message(errorCode.getMessage()).
                 code(errorCode.getHttpStatus().value()).build();
         return errorResponse;
     }

@@ -22,11 +22,11 @@ public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         log.error("authentication exception: {}", authException.getMessage());
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code(ErrorCode.UN_AUTHENTICATED.getHttpStatus().value())
-                .message(authException.getMessage()).build();
+                .code(ErrorCode.ACCOUNT_DOES_NOT_EXIST.getHttpStatus().value())
+                .message(ErrorCode.ACCOUNT_DOES_NOT_EXIST.getMessage()).build();
 
         response.setContentType("application/json");
-        response.setStatus(HttpStatus.OK.value());
+        response.setStatus(ErrorCode.ACCOUNT_DOES_NOT_EXIST.getHttpStatus().value());
 
         objectMapper.writeValue(response.getOutputStream(), errorResponse);
 

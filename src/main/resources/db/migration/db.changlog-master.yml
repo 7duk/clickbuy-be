@@ -6,3 +6,10 @@ databaseChangeLog:
         - sqlFile:
             path: init/initial.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: add_constraint_user_mail_unique_into_account_table
+      author: _n.dx2
+      changes:
+        - sqlFile:
+            path: init/add_unique_constraint_into_account_table.sql
+            relativeToChangelogFile: true

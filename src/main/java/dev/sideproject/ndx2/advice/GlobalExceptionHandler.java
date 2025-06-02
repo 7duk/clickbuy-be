@@ -2,6 +2,8 @@ package dev.sideproject.ndx2.advice;
 
 import dev.sideproject.ndx2.dto.ValidationError;
 import dev.sideproject.ndx2.exception.AppException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -21,9 +23,16 @@ public class GlobalExceptionHandler {
                 .stream().collect(Collectors.
                         toMap(FieldError::getField, FieldError::getDefaultMessage));
         ValidationError validationError = ValidationError.builder().
-                errors(errors).
-                code(HttpStatus.UNPROCESSABLE_ENTITY.value()).build();
+                errors(errors).code(HttpStatus.UNPROCESSABLE_ENTITY.value()).build();
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationError);
+    }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> handleConstraintViolationException(final ConstraintViolationException exception) {
+        Map<String, String> errors = exception.getConstraintViolations().stream()
+                .collect(Collectors.toMap(v -> v.getPropertyPath().toString(), ConstraintViolation::getMessage));
+        ValidationError validationError = ValidationError.builder().
+                errors(errors).code(HttpStatus.UNPROCESSABLE_ENTITY.value()).build();
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(validationError);
     }
 

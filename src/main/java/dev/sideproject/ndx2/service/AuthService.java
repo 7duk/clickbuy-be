@@ -6,7 +6,7 @@ import dev.sideproject.ndx2.dto.AuthResponse;
 import dev.sideproject.ndx2.dto.LoginRequest;
 import dev.sideproject.ndx2.dto.RegisterRequest;
 
-public interface AccountService {
-    void verify(String token);
-    AccountResponse details(Long id);
+public interface AuthService {
+    AccountResponse register(RegisterRequest registerRequest) throws JsonProcessingException;
+    AuthResponse login(LoginRequest loginRequest);
 }

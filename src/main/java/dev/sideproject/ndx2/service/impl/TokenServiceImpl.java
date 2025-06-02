@@ -39,13 +39,12 @@ public class TokenServiceImpl implements TokenService {
     final AccountRepository accountRepository;
 
     @Override
-    public String createToken(Long id, String email, TokenType tokenType, int expirationHours) {
+    public String createToken(String username, TokenType tokenType, int expirationHours) {
         ZonedDateTime now = ZonedDateTime.now();
         Instant issuedAt = now.toInstant();
         Instant expireAt = now.plusHours(expirationHours).toInstant();
         Map<String, Object> claims = new HashMap<>();
-        claims.put(Claims.SUBJECT, id);
-        claims.put(Claims.AUDIENCE, email);
+        claims.put(Claims.SUBJECT, username);
         claims.put(Claims.ID, UUID.randomUUID().toString());
         claims.put(CLAIM_TOKEN_TYPE, tokenType);
         claims.put(Claims.ISSUED_AT, Date.from(issuedAt));
@@ -59,7 +58,6 @@ public class TokenServiceImpl implements TokenService {
         Claims claims = extractClaims(token);
         return switch (key) {
             case Claims.SUBJECT -> claims.get(Claims.SUBJECT, requiredType);
-            case Claims.AUDIENCE -> claims.get(Claims.AUDIENCE, requiredType);
             case Claims.ID -> claims.get(Claims.ID, requiredType);
             case Claims.ISSUED_AT -> claims.get(Claims.ISSUED_AT, requiredType);
             case Claims.ISSUER -> claims.get(Claims.ISSUER, requiredType);
@@ -86,8 +84,6 @@ public class TokenServiceImpl implements TokenService {
         if (!isValidIssuer(claims)) return false;
         if (isExpired(token)) return false;
         if (isUsed(token)) return false;
-        UUID jti = claims.get(Claims.ID, UUID.class);
-        if (isContain(jti)) return false;
         return true;
     }
 
@@ -97,12 +93,14 @@ public class TokenServiceImpl implements TokenService {
 
     public boolean isUsed(String token) {
         Claims claims = extractClaims(token);
-        UUID jit = claims.get(Claims.ID, UUID.class);
-        if (Objects.isNull(jit)) {
-            log.error(ErrorCode.JTI_IS_NULL.getMessage());
-            throw new AppException(ErrorCode.JTI_IS_NULL);
+        try {
+            UUID jit = UUID.fromString(claims.get(Claims.ID, String.class));
+            return isContain(jit);
         }
-        return isContain(jit);
+        catch (IllegalArgumentException e) {
+            log.error(ErrorCode.JTI_IS_INVALID.getMessage());
+            throw new AppException(ErrorCode.JTI_IS_INVALID);
+        }
     }
 
     public boolean isExpired(String token) {
@@ -120,10 +118,5 @@ public class TokenServiceImpl implements TokenService {
         return jwtIssuer.equals(claims.get(Claims.ISSUER, String.class));
     }
 
-    private boolean isExistingAccount(Claims claims) {
-        String id = claims.get(Claims.SUBJECT, String.class);
-        String email = claims.get(Claims.AUDIENCE, String.class);
-        return accountRepository.existsByIdAndEmail(Long.parseLong(id), email);
-    }
 
 }

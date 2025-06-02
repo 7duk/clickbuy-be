@@ -18,7 +18,7 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 public class AccessDeniedHandler implements org.springframework.security.web.access.AccessDeniedHandler {
-    ObjectMapper objectMapper;
+    final ObjectMapper objectMapper;
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
@@ -26,7 +26,7 @@ public class AccessDeniedHandler implements org.springframework.security.web.acc
 
         ErrorResponse errorResponse = ErrorResponse.builder().
                 code(ErrorCode.UN_AUTHORIZED.getHttpStatus().value())
-                .message(accessDeniedException.getMessage()).build();
+                .message(ErrorCode.UN_AUTHORIZED.getMessage()).build();
 
         response.setContentType("application/json");
         response.setStatus(HttpStatus.OK.value());

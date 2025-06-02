@@ -1,6 +1,8 @@
 package dev.sideproject.ndx2.security;
 
 import dev.sideproject.ndx2.entity.Account;
+import dev.sideproject.ndx2.exception.AppException;
+import dev.sideproject.ndx2.exception.ErrorCode;
 import dev.sideproject.ndx2.repository.AccountRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +29,11 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByUsername(username)
-                .orElseThrow(()-> new UsernameNotFoundException("Account doesn't exists with username: " + username));
+                .orElseThrow(() -> {
+                    ErrorCode errorCode = ErrorCode.ACCOUNT_DOES_NOT_EXIST;
+                    log.error("{} with username: {} provided", errorCode.getMessage(), username);
+                    throw new AppException(errorCode);
+                });
         log.info("account: username={}, password={}, role = {} ", username, account.getPassword(), account.getRole());
         return new UserDetails() {
             @Override

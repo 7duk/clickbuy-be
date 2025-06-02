@@ -16,6 +16,4 @@ public interface AccountRepository extends RepositoryInterface<Account, Long> {
     @Modifying
     @Query(value = "UDPATE account SET role = :role WHERE id = :id", nativeQuery = true)
     void updateRoleById(@Param("id") Long id, @Param("role") Role role);
-
-    boolean existsByIdAndEmail(Long id, String email);
 }

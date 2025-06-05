@@ -6,6 +6,7 @@ import dev.sideproject.ndx2.exception.ErrorCode;
 import dev.sideproject.ndx2.repository.AccountRepository;
 import dev.sideproject.ndx2.service.TokenService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -69,7 +70,12 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Claims extractClaims(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+        try{
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+        }
+        catch (ExpiredJwtException e){
+            return e.getClaims();
+        }
     }
 
     @Override

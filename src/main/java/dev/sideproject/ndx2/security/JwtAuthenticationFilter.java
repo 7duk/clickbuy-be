@@ -1,5 +1,10 @@
 package dev.sideproject.ndx2.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.sideproject.ndx2.dto.ErrorResponse;
+import dev.sideproject.ndx2.exception.AppException;
+import dev.sideproject.ndx2.exception.ErrorCode;
+import dev.sideproject.ndx2.helper.TokenHelper;
 import dev.sideproject.ndx2.service.TokenService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -25,10 +30,11 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     TokenService tokenService;
     UserDetailServiceImpl userDetailService;
+    ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = getAccessToken(request);
+        String accessToken = TokenHelper.getAccessToken(request);
         if (accessToken != null && StringUtils.isNotBlank(accessToken)) {
             if (tokenService.isValid(accessToken)) {
                 String username = tokenService.getClaim(accessToken, Claims.SUBJECT, String.class);
@@ -36,15 +42,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+            else{
+                handleAuthenticationError(response,ErrorCode.UN_AUTHENTICATED);
+                return;
+            }
         }
         filterChain.doFilter(request, response);
     }
 
-    private String getAccessToken(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            return token.substring(7);
-        }
-        return StringUtils.EMPTY;
+    private void handleAuthenticationError(HttpServletResponse response, ErrorCode errorCode) throws IOException {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(errorCode.getHttpStatus().value())
+                .message(errorCode.getMessage()).build();
+
+        response.setContentType("application/json");
+        response.setStatus(errorCode.getHttpStatus().value());
+
+        objectMapper.writeValue(response.getOutputStream(), errorResponse);
     }
 }

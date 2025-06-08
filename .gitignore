@@ -34,3 +34,6 @@ gradlew
 gradlew.bat
 
 /bin/
+
+*.DS_Store
+

@@ -3,8 +3,8 @@ package dev.sideproject.ndx2.mapper;
 import dev.sideproject.ndx2.dto.ItemImageResponse;
 import dev.sideproject.ndx2.entity.ItemImage;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
 @Mapper
 public interface ItemImageMapper {
     ItemImageMapper INSTANCE = Mappers.getMapper(ItemImageMapper.class);

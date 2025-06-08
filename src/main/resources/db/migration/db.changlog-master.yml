@@ -13,3 +13,17 @@ databaseChangeLog:
         - sqlFile:
             path: init/add_unique_constraint_into_account_table.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: add_category_item_table
+      author: _n.dx2
+      changes:
+        - sqlFile:
+            path: init/add_category_item_table.sql
+            relativeToChangelogFile: true
+  - changeSet:
+      id: add_image
+      author: _n.dx2
+      changes:
+        - sqlFile:
+            path: init/add_image.sql
+            relativeToChangelogFile: true

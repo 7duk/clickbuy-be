@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface AccountRepository extends RepositoryInterface<Account, Long> {
+public interface AccountRepository extends RepositoryInterface<Account, Integer> {
     Optional<Account> findByUsername(String username);
 
     @Modifying
     @Query(value = "UDPATE account SET role = :role WHERE id = :id", nativeQuery = true)
-    void updateRoleById(@Param("id") Long id, @Param("role") Role role);
+    void updateRoleById(@Param("id") Integer id, @Param("role") Role role);
 }

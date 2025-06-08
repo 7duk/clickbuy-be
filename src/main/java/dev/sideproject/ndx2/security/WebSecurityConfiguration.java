@@ -30,7 +30,8 @@ public class WebSecurityConfiguration {
             "/swagger-ui.html",
             "/webjars/**",
             "/auth/**",
-            "/account/verify"
+            "/account/verify",
+            "/error"
     };
     final JwtAuthenticationFilter authenticationFilter;
     final AuthenticationEntryPointHandler authenticationEntryPointHandler;

@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Account extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Unique(entity = Account.class, fieldName = "username", message = "Username already exists")
     @Column(name = "username", nullable = false, length = 50)

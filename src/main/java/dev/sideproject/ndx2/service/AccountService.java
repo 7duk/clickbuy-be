@@ -8,5 +8,5 @@ import dev.sideproject.ndx2.dto.RegisterRequest;
 
 public interface AccountService {
     void verify(String token);
-    AccountResponse details(Long id);
+    AccountResponse details(Integer id);
 }

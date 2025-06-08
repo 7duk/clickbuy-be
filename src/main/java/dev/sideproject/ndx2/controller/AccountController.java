@@ -25,7 +25,7 @@ public class AccountController extends Controller {
 
     @PreAuthorize("hasAnyAuthority('USER','ADMIN')")
     @GetMapping("/info/{id}")
-    public ResponseEntity<?> info(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<?> info(@PathVariable(name = "id") Integer id) {
         AccountResponse accountResponse = accountService.details(id);
         return response(HttpStatus.OK, "account details retrieved", accountResponse);
     }

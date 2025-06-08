@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
     public AccountResponse register(RegisterRequest registerRequest) throws JsonProcessingException {
         String passwordHashed = passwordEncoder.encode(registerRequest.getPassword());
 
-        Account createdByAccount = accountRepository.findById(1L)
+        Account createdByAccount = accountRepository.findById(1)
                 .orElse(new Account());
 
         Account accountMapped = Account.builder()

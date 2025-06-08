@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional(readOnly = true)
     @Override
-    public AccountResponse details(Long id) {
+    public AccountResponse details(Integer id) {
         return accountRepository.findById(id).
                 map(account -> AccountResponse.builder()
                         .id(account.getId())

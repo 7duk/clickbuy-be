@@ -26,6 +26,9 @@ import java.util.Optional;
 @SuperBuilder
 @NoArgsConstructor
 public abstract class BaseEntity implements AuditorAware<Account> {
+    @Column(name = "is_deleted")
+    private int isDeleted;
+
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 

@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AccountResponse implements Serializable {
     @JsonProperty("id")
-    private Long id;
+    private Integer id;
 
     @JsonProperty("username")
     private String username;
@@ -34,13 +34,13 @@ public class AccountResponse implements Serializable {
     private LocalDateTime createdAt;
 
     @JsonProperty("created_by")
-    private Long createdBy;
+    private Integer createdBy;
 
     @JsonProperty("last_modified_at")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastModifiedAt;
 
     @JsonProperty("last_modified_by")
-    private Long lastModifiedBy;
+    private Integer lastModifiedBy;
 }
 

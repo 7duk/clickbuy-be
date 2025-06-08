@@ -1,5 +1,6 @@
 package dev.sideproject.ndx2.advice;
 
+import dev.sideproject.ndx2.dto.ErrorResponse;
 import dev.sideproject.ndx2.dto.ValidationError;
 import dev.sideproject.ndx2.exception.AppException;
 import jakarta.validation.ConstraintViolation;
@@ -40,5 +41,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleAppException(final AppException exception) {
         return ResponseEntity.status(exception.getHttpStatus())
                 .body(exception.toResponse());
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ErrorResponse> handleException(final Exception exception) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message(exception.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errorResponse);
     }
 }

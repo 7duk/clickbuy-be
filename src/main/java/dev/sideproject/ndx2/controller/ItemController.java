@@ -28,9 +28,12 @@ public class ItemController extends Controller {
                                       @RequestParam(name = "size", defaultValue = "10") int size,
                                       @RequestParam(name = "order_by", required = false) String orderBy,
                                       @RequestParam(name = "direction", required = false) String direction,
-                                      @RequestParam(name = "category_ids", required = false) String categoryIds) {
+                                      @RequestParam(name = "category_ids", required = false) String categoryIds,
+                                      @RequestParam(name = "price", required = false) Long price,
+                                      @RequestParam(name = "price_comparision", required = false) String priceComparision
+                                      ) {
         log.info("category_ids : {}", categoryIds);
-        return response(HttpStatus.OK, "get items successfully.", itemService.getItems(page, size, orderBy, direction, categoryIds));
+        return response(HttpStatus.OK, "get items successfully.", itemService.getItems(page, size, direction, orderBy, categoryIds,price,priceComparision));
 
     }
 

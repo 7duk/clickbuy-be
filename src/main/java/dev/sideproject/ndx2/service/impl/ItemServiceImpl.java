@@ -34,10 +34,11 @@ public class ItemServiceImpl implements ItemService {
     ItemRepository itemRepository;
 
     @Override
-    public Page getItems(int page, int size, String direction, String orderBy, String categoryIds) {
+    public Page getItems(int page, int size, String direction, String orderBy, String categoryIds, Long price, String priceComparision) {
         Sort sort;
         if (Objects.nonNull(orderBy) && Objects.nonNull(direction)) {
-            sort = Sort.by(direction, orderBy);
+            Sort.Direction direct = Sort.Direction.valueOf(direction.toUpperCase());
+            sort = Sort.by(direct, orderBy);
         } else {
             sort = Sort.unsorted();
         }
@@ -49,7 +50,7 @@ public class ItemServiceImpl implements ItemService {
         }
         filters.put("isDeleted", 0);
 
-        Specification<Item> specification = ItemSpecs.getItemSpecification(filters);
+        Specification<Item> specification = ItemSpecs.getItemSpecification(filters, priceComparision, price);
 
         return itemRepository.findAll(specification, pageable).map(ItemMapper::mapToItemResponse);
     }

@@ -14,11 +14,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ItemSpecs {
-    public static Specification<Item> getItemSpecification(Map<String, Object> filters) {
+    public static Specification<Item> getItemSpecification(Map<String, Object> filters, String comparison, Long price) {
         return new Specification<Item>() {
             @Override
             public Predicate toPredicate(Root<Item> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<Predicate>();
+                if (comparison != null && price != null) {
+                    switch (comparison.toLowerCase()) {
+                        case "less_than":
+                            predicates.add(criteriaBuilder.lessThan(root.get("publicPrice"), price));
+                             break;
+                        case "greater_than":
+                            predicates.add(criteriaBuilder.greaterThan(root.get("publicPrice"), price));
+                             break;
+                    }
+                }
+
                 filters.forEach((k, v) -> {
                     if (k.equals("category")) {
                         if (!v.toString().contains(",")) {
@@ -34,7 +45,7 @@ public class ItemSpecs {
                         predicates.add(criteriaBuilder.equal(root.get(k), v));
                     }
                 });
-                return criteriaBuilder.and(predicates.toArray(predicates.toArray(new Predicate[0])));
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
         };
     }

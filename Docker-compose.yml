@@ -43,9 +43,22 @@ services:
     restart: unless-stopped
     networks:
       - backend_network
-
+  mongodb:
+    image: mongo:latest
+    container_name: sd-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend_network
 volumes:
     backend_volume:
+    mongo-data:
 
 networks:
     backend_network:

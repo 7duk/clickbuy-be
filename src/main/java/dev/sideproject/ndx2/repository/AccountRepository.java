@@ -16,4 +16,7 @@ public interface AccountRepository extends RepositoryInterface<Account, Integer>
     @Modifying
     @Query(value = "UDPATE account SET role = :role WHERE id = :id", nativeQuery = true)
     void updateRoleById(@Param("id") Integer id, @Param("role") Role role);
+
+    @Query(value = "select fullname from account where id = :id", nativeQuery = true)
+    String findFullNameById(@Param("id") Integer id);
 }

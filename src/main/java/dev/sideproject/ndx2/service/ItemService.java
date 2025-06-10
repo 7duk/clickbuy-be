@@ -4,7 +4,7 @@ import dev.sideproject.ndx2.dto.ItemResponse;
 import org.springframework.data.domain.Page;
 
 public interface ItemService {
-    Page getItems(int page, int size, String direction, String orderBy, String categoryIds);
+    Page getItems(int page, int size, String direction, String orderBy, String categoryIds, Long price, String priceComparision);
 
     ItemResponse getItem(Integer id);
 }

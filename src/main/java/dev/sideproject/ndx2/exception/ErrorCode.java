@@ -19,7 +19,8 @@ public enum ErrorCode {
     TOKEN_INVALID("token is invalid",HttpStatus.UNAUTHORIZED),
     ACCOUNT_VERIFIED("account has already been verified", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID("password is invalid",HttpStatus.BAD_REQUEST),
-    NOT_FOUND("not found", HttpStatus.NOT_FOUND);
+    NOT_FOUND("not found", HttpStatus.NOT_FOUND),
+    SAVE_ERROR("save operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
     String message;
     HttpStatus httpStatus;
 }

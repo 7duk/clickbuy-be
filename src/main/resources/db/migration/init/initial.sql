@@ -10,6 +10,7 @@ CREATE TABLE `account` (
   `email` varchar(50) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
+    `fullname` varchar(255),
   `refresh_token` longtext DEFAULT NULL,
   `created_at` varbinary(255) NOT NULL,
   `updated_at` varbinary(255) DEFAULT NULL,
@@ -18,10 +19,10 @@ CREATE TABLE `account` (
 );
 SET time_zone = 'Asia/Ho_Chi_Minh';
 
-insert into sideproject.account(username,password,role,email,created_at,created_by)
+insert into sideproject.account(username,password,role,email,created_at,created_by,fullname)
 values
-    ('admin','$2a$12$3joiORYYNK1qhbMk7q/PDeqji.MedyFBG.qxLzgl9.eFPyL0MZzWW','ADMIN','ducnguyen.12965@gmail.com',NOW(),1),
-    ('user1','$2a$12$3joiORYYNK1qhbMk7q/PDeqji.MedyFBG.qxLzgl9.eFPyL0MZzWW','USER','duccris1105@gmail.com',NOW(),1);
+    ('admin','$2a$12$3joiORYYNK1qhbMk7q/PDeqji.MedyFBG.qxLzgl9.eFPyL0MZzWW','ADMIN','ducnguyen.12965@gmail.com',NOW(),1,"Nguyen A"),
+    ('user1','$2a$12$3joiORYYNK1qhbMk7q/PDeqji.MedyFBG.qxLzgl9.eFPyL0MZzWW','USER','duccris1105@gmail.com',NOW(),1,"Nguyen B");
 
 
 

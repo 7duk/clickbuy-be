@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "cart")
 @SuperBuilder
 @Getter
+@Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -21,9 +23,12 @@ public class Cart extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    Integer account_id;
+    @Column(name = "account_id", nullable = false)
+    Integer accountId;
 
-    Integer item_id;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "item_id")
+    Item item;
 
     @Column(name = "quantity", nullable = false)
     Integer quantity;

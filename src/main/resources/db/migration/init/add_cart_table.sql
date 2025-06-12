@@ -14,3 +14,7 @@ CREATE TABLE `cart` (
                              CONSTRAINT `FK_IDT_CART` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
                              CONSTRAINT `FK_USER_CART` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 ) ;
+
+
+insert into `cart` (account_id, item_id, quantity)
+values (2,570,3),(2,571,1),(2,572,4);

@@ -62,10 +62,10 @@ public class AccountServiceImpl implements AccountService {
                         .fullName(account.getFullName())
                         .email(account.getEmail())
                         .createdAt(account.getCreatedAt())
-                        .createdBy(account.getCreatedBy().getId())
+                        .createdBy(account.getCreatedBy())
                         .lastModifiedAt(account.getUpdatedAt())
                         .lastModifiedBy(Objects.isNull(account.getUpdatedBy())
-                                ? null : account.getUpdatedBy().getId())
+                                ? null : account.getUpdatedBy())
                         .build()
                 ).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_DOES_NOT_EXIST));
     }

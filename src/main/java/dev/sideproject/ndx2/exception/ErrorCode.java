@@ -20,7 +20,8 @@ public enum ErrorCode {
     ACCOUNT_VERIFIED("account has already been verified", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID("password is invalid",HttpStatus.BAD_REQUEST),
     NOT_FOUND("not found", HttpStatus.NOT_FOUND),
-    SAVE_ERROR("save operation failed", HttpStatus.INTERNAL_SERVER_ERROR);
+    SAVE_ERROR("save operation failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    ITEM_NOT_FOUND("item not found", HttpStatus.NOT_FOUND);
     String message;
     HttpStatus httpStatus;
 }

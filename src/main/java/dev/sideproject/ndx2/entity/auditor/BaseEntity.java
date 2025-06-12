@@ -25,7 +25,7 @@ import java.util.Optional;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public abstract class BaseEntity implements AuditorAware<Account> {
+public abstract class BaseEntity implements AuditorAware<Integer> {
     @Column(name = "is_deleted")
     private int isDeleted;
 
@@ -33,25 +33,24 @@ public abstract class BaseEntity implements AuditorAware<Account> {
     private LocalDateTime createdAt;
 
     @CreatedBy
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", updatable = false, nullable = false)
-    private Account createdBy;
+    @Column(name = "created_by", updatable = false, nullable = false)
+    private Integer createdBy;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @LastModifiedBy
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "updated_by")
-    private Account updatedBy;
+    @Column(name = "updated_by")
+    private Integer updatedBy;
 
     @Override
-    public Optional<Account> getCurrentAuditor() {
+    public Optional<Integer> getCurrentAuditor() {
         return Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)
                 .filter(Authentication::isAuthenticated)
                 .map(Authentication::getPrincipal)
-                .map(Account.class::cast);
+                .map(Account.class::cast)
+                .map(Account::getId);
     }
 
     @PrePersist

@@ -52,4 +52,7 @@ public class Item extends BaseEntity {
 
     @OneToMany(fetch = FetchType.EAGER,mappedBy = "item")
     List<ItemImage> imageItems;
+
+    @OneToOne(fetch = FetchType.EAGER, mappedBy = "item")
+    Cart cart;
 }

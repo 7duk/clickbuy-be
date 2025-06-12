@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
                 .fullName(registerRequest.getFullName())
                 .username(registerRequest.getUsername())
                 .password(passwordHashed)
-                .createdBy(createdByAccount)
+                .createdBy(createdByAccount.getCreatedBy())
                 .role(Role.GUEST).build();
 
         Account accountSaved = accountRepository.save(accountMapped);
@@ -63,9 +63,9 @@ public class AuthServiceImpl implements AuthService {
                 .fullName(accountSaved.getFullName())
                 .email(accountSaved.getEmail())
                 .createdAt(accountSaved.getCreatedAt())
-                .createdBy(accountSaved.getCreatedBy().getId())
+                .createdBy(accountSaved.getId())
                 .lastModifiedAt(accountSaved.getUpdatedAt())
-                .lastModifiedBy(Objects.isNull(accountSaved.getUpdatedBy()) ? null : accountSaved.getUpdatedBy().getId())
+                .lastModifiedBy(Objects.isNull(accountSaved.getUpdatedBy()) ? null : accountSaved.getUpdatedBy())
                 .build();
         rabbitMQPublisher.sendMessage(UUID.randomUUID().toString(), accountDtoResponse);
         return accountDtoResponse;
@@ -93,9 +93,9 @@ public class AuthServiceImpl implements AuthService {
                 .fullName(account.getFullName())
                 .email(account.getEmail())
                 .createdAt(account.getCreatedAt())
-                .createdBy(account.getCreatedBy().getId())
+                .createdBy(account.getCreatedBy())
                 .lastModifiedAt(account.getUpdatedAt())
-                .lastModifiedBy(Objects.isNull(account.getUpdatedBy()) ? null : account.getUpdatedBy().getId())
+                .lastModifiedBy(Objects.isNull(account.getUpdatedBy()) ? null : account.getId())
                 .build();
         return authResponse;
     }

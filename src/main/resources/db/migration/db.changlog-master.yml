@@ -27,3 +27,10 @@ databaseChangeLog:
         - sqlFile:
             path: init/add_image.sql
             relativeToChangelogFile: true
+  - changeSet:
+      id: add_cart_table
+      author: _n.dx2
+      changes:
+        - sqlFile:
+            path: init/add_cart_table.sql
+            relativeToChangelogFile: true

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,19 +44,23 @@ public class CartServiceImpl implements CartService {
             throw new AppException(ErrorCode.ITEM_NOT_FOUND);
         });
         cartMapped.setItem(item);
-        return CartMapper.INSTANCE.toCartResponse(cartRepository.save(cartMapped));
+        Optional<Cart> existed = cartRepository.findByAccountIdAndItem(cartRequest.getAccountId(), item);
+        if (!existed.isPresent()) {
+            return CartMapper.INSTANCE.toCartResponse(cartRepository.save(cartMapped));
+        } else {
+            Cart existingCart = existed.get();
+            existingCart.setQuantity(existingCart.getQuantity() + cartRequest.getQuantity());
+            return CartMapper.INSTANCE.toCartResponse(cartRepository.save(existingCart));
+        }
     }
 
     @Transactional
     @Override
     public void deleteItemIdCart(Integer id) {
-        boolean exists = cartRepository.existsById(id);
-        if (!exists) {
+        Cart cart = cartRepository.findById(id).orElseThrow(() -> {
             throw new AppException(ErrorCode.ITEM_NOT_FOUND);
-        }
-        else{
-            cartRepository.deleteById(id);
-        }
+        });
+        cartRepository.delete(cart);
     }
 
 

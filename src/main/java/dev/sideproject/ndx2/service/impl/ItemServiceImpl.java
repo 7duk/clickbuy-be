@@ -1,7 +1,6 @@
 package dev.sideproject.ndx2.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.sideproject.ndx2.dto.ItemResponse;
+import dev.sideproject.ndx2.dto.response.ItemResponse;
 import dev.sideproject.ndx2.entity.Item;
 import dev.sideproject.ndx2.exception.AppException;
 import dev.sideproject.ndx2.exception.ErrorCode;
@@ -21,7 +20,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -62,5 +60,11 @@ public class ItemServiceImpl implements ItemService {
             log.error("item {}", errorCode.getMessage());
             throw new AppException(errorCode);
         });
+    }
+
+    @Override
+    public List<ItemResponse> search(String keyword) {
+        return itemRepository.findByNameContaining(keyword)
+                .stream().map(ItemMapper::mapToItemResponse).toList();
     }
 }

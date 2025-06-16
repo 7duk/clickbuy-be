@@ -1,6 +1,6 @@
 package dev.sideproject.ndx2.controller;
 
-import dev.sideproject.ndx2.dto.CategoryResponse;
+import dev.sideproject.ndx2.dto.response.CategoryResponse;
 import dev.sideproject.ndx2.service.CategoryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

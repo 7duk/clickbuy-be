@@ -1,7 +1,7 @@
 package dev.sideproject.ndx2.service.impl;
 
-import dev.sideproject.ndx2.dto.ReviewRequest;
-import dev.sideproject.ndx2.dto.ReviewResponse;
+import dev.sideproject.ndx2.dto.request.ReviewRequest;
+import dev.sideproject.ndx2.dto.response.ReviewResponse;
 import dev.sideproject.ndx2.entity.Review;
 import dev.sideproject.ndx2.exception.AppException;
 import dev.sideproject.ndx2.exception.ErrorCode;
@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,6 +1,6 @@
 package dev.sideproject.ndx2.service;
 
-import dev.sideproject.ndx2.dto.CategoryResponse;
+import dev.sideproject.ndx2.dto.response.CategoryResponse;
 
 import java.util.List;
 

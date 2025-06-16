@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCode {
     USER_NOT_EXISTED("user not existed", HttpStatus.NOT_FOUND),
-    UN_AUTHORIZED("access denied", HttpStatus.FORBIDDEN),
+    FORBIDDEN("access denied", HttpStatus.FORBIDDEN),
     UN_AUTHENTICATED("unauthorized", HttpStatus.UNAUTHORIZED),
     REGISTER_FAILED("register failed", HttpStatus.INTERNAL_SERVER_ERROR),
     JTI_IS_INVALID("jti is invalid",HttpStatus.BAD_REQUEST),

@@ -1,4 +1,4 @@
-package dev.sideproject.ndx2.dto;
+package dev.sideproject.ndx2.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

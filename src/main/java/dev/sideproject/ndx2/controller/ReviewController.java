@@ -1,6 +1,6 @@
 package dev.sideproject.ndx2.controller;
 
-import dev.sideproject.ndx2.dto.ReviewRequest;
+import dev.sideproject.ndx2.dto.request.ReviewRequest;
 import dev.sideproject.ndx2.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;

@@ -2,7 +2,7 @@ package dev.sideproject.ndx2.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.sideproject.ndx2.dto.AccountResponse;
+import dev.sideproject.ndx2.dto.response.AccountResponse;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;

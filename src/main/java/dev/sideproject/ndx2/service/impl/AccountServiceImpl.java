@@ -1,7 +1,9 @@
 package dev.sideproject.ndx2.service.impl;
 
-import dev.sideproject.ndx2.dto.AccountResponse;
+import dev.sideproject.ndx2.dto.request.AccountRequest;
+import dev.sideproject.ndx2.dto.response.AccountResponse;
 import dev.sideproject.ndx2.constant.Role;
+import dev.sideproject.ndx2.entity.Account;
 import dev.sideproject.ndx2.exception.AppException;
 import dev.sideproject.ndx2.exception.ErrorCode;
 import dev.sideproject.ndx2.repository.AccountRepository;
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
     TokenService tokenService;
+    PasswordEncoder passwordEncoder;
 
     @Override
     public void verify(String token) {
@@ -70,4 +74,27 @@ public class AccountServiceImpl implements AccountService {
                 ).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_DOES_NOT_EXIST));
     }
 
+    @Transactional
+    @Override
+    public void changePassword(Integer accountId, AccountRequest accountRequest) {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> {
+            throw new AppException(ErrorCode.ACCOUNT_DOES_NOT_EXIST);
+        });
+        if (!passwordEncoder.matches(accountRequest.getOldPassword(), account.getPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_INVALID);
+        }
+        String newPasswordEncoded = passwordEncoder.encode(accountRequest.getNewPassword());
+        account.setPassword(newPasswordEncoded);
+        accountRepository.save(account);
+    }
+
+    @Transactional
+    @Override
+    public void editProfile(Integer accountId, AccountRequest accountRequest) {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> {
+            throw new AppException(ErrorCode.ACCOUNT_DOES_NOT_EXIST);
+        });
+        account.setFullName(accountRequest.getFullname());
+        accountRepository.saveAndFlush(account);
+    }
 }

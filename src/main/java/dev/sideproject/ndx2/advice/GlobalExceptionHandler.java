@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,6 +42,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleAppException(final AppException exception) {
         return ResponseEntity.status(exception.getHttpStatus())
                 .body(exception.toResponse());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(HttpStatus.UNAUTHORIZED.value())
+                .message("invalid username of password")
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(errorResponse);
     }
 
     @ExceptionHandler(value = Exception.class)

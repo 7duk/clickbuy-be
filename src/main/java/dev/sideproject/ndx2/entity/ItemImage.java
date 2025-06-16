@@ -1,6 +1,5 @@
 package dev.sideproject.ndx2.entity;
 
-import dev.sideproject.ndx2.entity.auditor.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

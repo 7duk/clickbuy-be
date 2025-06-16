@@ -1,7 +1,7 @@
 package dev.sideproject.ndx2.service.impl;
 
 import dev.sideproject.ndx2.constant.TokenType;
-import dev.sideproject.ndx2.dto.AccountResponse;
+import dev.sideproject.ndx2.dto.response.AccountResponse;
 import dev.sideproject.ndx2.service.MailService;
 import dev.sideproject.ndx2.service.TokenService;
 import jakarta.mail.MessagingException;

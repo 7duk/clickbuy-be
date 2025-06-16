@@ -42,5 +42,11 @@ public class ItemController extends Controller {
     public ResponseEntity<?> getItem(@PathVariable("id") Integer id) {
         return response(HttpStatus.OK, "get item successfully.", itemService.getItem(id));
     }
+
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam("keyword") String keyword) {
+        return response(HttpStatus.OK, "retreived items successfully.", itemService.search(keyword));
+    }
 }
 

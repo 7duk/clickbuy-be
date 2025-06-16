@@ -3,10 +3,10 @@ package dev.sideproject.ndx2.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.sideproject.ndx2.constant.Role;
 import dev.sideproject.ndx2.constant.TokenType;
-import dev.sideproject.ndx2.dto.AccountResponse;
-import dev.sideproject.ndx2.dto.AuthResponse;
-import dev.sideproject.ndx2.dto.LoginRequest;
-import dev.sideproject.ndx2.dto.RegisterRequest;
+import dev.sideproject.ndx2.dto.response.AccountResponse;
+import dev.sideproject.ndx2.dto.response.AuthResponse;
+import dev.sideproject.ndx2.dto.request.LoginRequest;
+import dev.sideproject.ndx2.dto.request.RegisterRequest;
 import dev.sideproject.ndx2.entity.Account;
 import dev.sideproject.ndx2.exception.AppException;
 import dev.sideproject.ndx2.exception.ErrorCode;
@@ -14,6 +14,7 @@ import dev.sideproject.ndx2.handler.RabbitMQPublisher;
 import dev.sideproject.ndx2.repository.AccountRepository;
 import dev.sideproject.ndx2.service.AuthService;
 import dev.sideproject.ndx2.service.TokenService;
+import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,8 +27,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -98,5 +99,46 @@ public class AuthServiceImpl implements AuthService {
                 .lastModifiedBy(Objects.isNull(account.getUpdatedBy()) ? null : account.getId())
                 .build();
         return authResponse;
+    }
+
+    @Override
+    public AuthResponse refreshToken(String refreshToken, String accessToken) {
+        // Check if refresh token is null
+        if (Objects.isNull(refreshToken)) {
+            throw new AppException(ErrorCode.TOKEN_INVALID);
+        }
+
+        //Throw exception if refresh token is invalid, else revoke it
+        if (!tokenService.isValid(refreshToken)) {
+            throw new AppException(ErrorCode.TOKEN_INVALID);
+        } else {
+            UUID jtiOfRefreshToken = UUID.fromString(tokenService.getClaim(refreshToken, Claims.ID, String.class));
+            tokenService.pushToBlackList(jtiOfRefreshToken);
+        }
+
+        // Revoke access token if it's still valid (not expired)
+        if (tokenService.isValid(accessToken)) {
+            UUID jtiOfAccessToken = UUID.fromString(tokenService.getClaim(accessToken, Claims.ID, String.class));
+            tokenService.pushToBlackList(jtiOfAccessToken);
+        }
+
+        Claims claimsOldRefreshToken = tokenService.extractClaims(refreshToken);
+        String username = tokenService.getClaim(refreshToken, Claims.SUBJECT, String.class);
+        String newAccessToken = tokenService.createToken(username, TokenType.ACCESS, 1);
+
+        Map<String, Object> newClaims = claimsOldRefreshToken.entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue
+                ));
+        newClaims.put(Claims.ID, UUID.randomUUID().toString());
+        newClaims.put(Claims.ISSUED_AT, new Date());
+        String newRefreshToken = tokenService.createToken(newClaims);
+
+        return AuthResponse.builder().accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
+
     }
 }

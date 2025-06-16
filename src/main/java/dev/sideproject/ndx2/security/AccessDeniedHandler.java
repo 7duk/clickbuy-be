@@ -25,8 +25,8 @@ public class AccessDeniedHandler implements org.springframework.security.web.acc
         log.error("authorize exception: {}", accessDeniedException.getMessage());
 
         ErrorResponse errorResponse = ErrorResponse.builder().
-                code(ErrorCode.UN_AUTHORIZED.getHttpStatus().value())
-                .message(ErrorCode.UN_AUTHORIZED.getMessage()).build();
+                code(ErrorCode.FORBIDDEN.getHttpStatus().value())
+                .message(ErrorCode.FORBIDDEN.getMessage()).build();
 
         response.setContentType("application/json");
         response.setStatus(HttpStatus.OK.value());

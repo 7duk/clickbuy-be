@@ -1,6 +1,6 @@
 package dev.sideproject.ndx2.service.impl;
 
-import dev.sideproject.ndx2.dto.CategoryResponse;
+import dev.sideproject.ndx2.dto.response.CategoryResponse;
 import dev.sideproject.ndx2.entity.Category;
 import dev.sideproject.ndx2.repository.CategoryRepository;
 import dev.sideproject.ndx2.service.CategoryService;

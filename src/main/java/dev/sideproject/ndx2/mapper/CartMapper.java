@@ -1,7 +1,7 @@
 package dev.sideproject.ndx2.mapper;
 
-import dev.sideproject.ndx2.dto.CartRequest;
-import dev.sideproject.ndx2.dto.CartResponse;
+import dev.sideproject.ndx2.dto.request.CartRequest;
+import dev.sideproject.ndx2.dto.response.CartResponse;
 import dev.sideproject.ndx2.entity.Cart;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

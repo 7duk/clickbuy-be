@@ -1,9 +1,8 @@
 package dev.sideproject.ndx2.service;
 
 
-import dev.sideproject.ndx2.dto.ReviewRequest;
-import dev.sideproject.ndx2.dto.ReviewResponse;
-import dev.sideproject.ndx2.entity.Review;
+import dev.sideproject.ndx2.dto.request.ReviewRequest;
+import dev.sideproject.ndx2.dto.response.ReviewResponse;
 
 import java.util.List;
 

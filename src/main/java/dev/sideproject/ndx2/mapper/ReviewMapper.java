@@ -1,7 +1,7 @@
 package dev.sideproject.ndx2.mapper;
 
-import dev.sideproject.ndx2.dto.ReviewRequest;
-import dev.sideproject.ndx2.dto.ReviewResponse;
+import dev.sideproject.ndx2.dto.request.ReviewRequest;
+import dev.sideproject.ndx2.dto.response.ReviewResponse;
 import dev.sideproject.ndx2.entity.Review;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;

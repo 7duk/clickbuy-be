@@ -1,6 +1,6 @@
 package dev.sideproject.ndx2.service;
 
- import dev.sideproject.ndx2.dto.AccountResponse;
+ import dev.sideproject.ndx2.dto.response.AccountResponse;
 import jakarta.mail.MessagingException;
 
 public interface MailService {

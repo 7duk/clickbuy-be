@@ -1,7 +1,7 @@
 package dev.sideproject.ndx2.service.impl;
 
-import dev.sideproject.ndx2.dto.CartRequest;
-import dev.sideproject.ndx2.dto.CartResponse;
+import dev.sideproject.ndx2.dto.request.CartRequest;
+import dev.sideproject.ndx2.dto.response.CartResponse;
 import dev.sideproject.ndx2.entity.Cart;
 import dev.sideproject.ndx2.entity.Item;
 import dev.sideproject.ndx2.exception.AppException;

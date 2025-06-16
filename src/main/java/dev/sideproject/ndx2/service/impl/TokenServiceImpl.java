@@ -55,6 +55,11 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+    public String createToken(Map<String, Object> claims){
+        return Jwts.builder().claims(claims).signWith(secretKey).compact();
+    }
+
+    @Override
     public <T> T getClaim(String token, String key, Class<T> requiredType) {
         Claims claims = extractClaims(token);
         return switch (key) {

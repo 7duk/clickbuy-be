@@ -1,9 +1,21 @@
-FROM eclipse-temurin:21-jdk
+# --- Stage 1: Build with Gradle ---
+FROM gradle:8.7-jdk-21-and-22 AS builder
+
+WORKDIR /app
+COPY . .
+
+# Build project
+RUN gradle build -x test --no-daemon
+
+# --- Stage 2: Run with JDK only ---
+FROM eclipse-temurin:21-jdk-alpine
 
 WORKDIR /app
 
-COPY . .
+# Copy the built jar from previous stage
+COPY --from=builder /app/build/libs/backend.jar .
 
-RUN chmod +x ./gradlew
+EXPOSE 8080
 
-CMD ["./gradlew", "bootRun", "--no-daemon"]
+# Run the app
+CMD ["java", "-jar", "backend.jar"]

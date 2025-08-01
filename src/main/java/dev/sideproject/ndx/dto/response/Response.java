@@ -1,4 +1,4 @@
-package dev.sideproject.ndx.dto;
+package dev.sideproject.ndx.dto.response;
 
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;

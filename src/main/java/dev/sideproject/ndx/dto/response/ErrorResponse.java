@@ -1,4 +1,4 @@
-package dev.sideproject.ndx.dto;
+package dev.sideproject.ndx.dto.response;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

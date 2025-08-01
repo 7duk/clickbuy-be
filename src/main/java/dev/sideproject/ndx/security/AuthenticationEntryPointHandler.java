@@ -1,7 +1,7 @@
 package dev.sideproject.ndx.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.sideproject.ndx.dto.ErrorResponse;
+import dev.sideproject.ndx.dto.response.ErrorResponse;
 import dev.sideproject.ndx.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

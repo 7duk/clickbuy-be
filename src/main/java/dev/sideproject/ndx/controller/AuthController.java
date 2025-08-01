@@ -1,7 +1,7 @@
 package dev.sideproject.ndx.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import dev.sideproject.ndx.dto.SuccessResponse;
+import dev.sideproject.ndx.dto.response.SuccessResponse;
 import dev.sideproject.ndx.dto.response.AccountResponse;
 import dev.sideproject.ndx.dto.request.AuthRequest;
 import dev.sideproject.ndx.dto.request.LoginRequest;

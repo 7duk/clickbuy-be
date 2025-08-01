@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'war'
     id 'org.springframework.boot' version '3.4.2'
     id 'io.spring.dependency-management' version '1.1.7'
 }
@@ -23,8 +22,13 @@ configurations {
 repositories {
     mavenCentral()
 }
+bootJar{
+    archiveFileName="backend.jar"
+}
 
 dependencies {
+    implementation 'io.micrometer:micrometer-registry-prometheus:1.15.0'
+    implementation 'net.logstash.logback:logstash-logback-encoder:8.1'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.mapstruct:mapstruct:1.6.3'
@@ -44,7 +48,6 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'com.mysql:mysql-connector-j'
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

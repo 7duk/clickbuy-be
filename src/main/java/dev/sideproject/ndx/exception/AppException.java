@@ -1,6 +1,6 @@
 package dev.sideproject.ndx.exception;
 
-import dev.sideproject.ndx.dto.ErrorResponse;
+import dev.sideproject.ndx.dto.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 
 public class AppException extends RuntimeException {

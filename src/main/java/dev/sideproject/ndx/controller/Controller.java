@@ -1,6 +1,6 @@
 package dev.sideproject.ndx.controller;
 
-import dev.sideproject.ndx.dto.SuccessResponse;
+import dev.sideproject.ndx.dto.response.SuccessResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

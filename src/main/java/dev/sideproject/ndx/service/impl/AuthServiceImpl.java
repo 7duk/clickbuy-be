@@ -74,8 +74,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
+
+        // Authenticate user (using UserDetailsService) and throw exception if credential invalid
         Authentication auth = daoAuthenticationProvider.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+
+        //Save authentication info into the security context if authentication succeeds
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         Account account = accountRepository.findByUsername(loginRequest.getUsername())

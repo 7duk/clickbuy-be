@@ -9,6 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,14 +26,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WebSecurityConfiguration {
-    static final String[] AUTH_WHITELIST = {
+    static final String[] WHITELIST = {
             "/v2/api-docs",
             "/swagger-resources/**",
             "/swagger-ui.html",
             "/webjars/**",
-            "/auth/**",
-            "/account/verify",
-            "/error"
+            "/error",
+            "/actuator/**"
     };
     final JwtAuthenticationFilter authenticationFilter;
     final AuthenticationEntryPointHandler authenticationEntryPointHandler;
@@ -51,14 +51,20 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
+    public WebSecurityCustomizer ignoreResources() {
+        return webSecurity -> webSecurity
+                .ignoring()
+                .requestMatchers(WHITELIST);
+    }
+
+    @Bean
     public SecurityFilterChain configure(HttpSecurity http, DaoAuthenticationProvider daoAuthenticationProvider) throws Exception {
         return http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .securityMatcher("/**")
-                .authorizeHttpRequests(auth -> auth.requestMatchers(AUTH_WHITELIST).permitAll()
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**","/account/verify").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(daoAuthenticationProvider)
-                .addFilterAfter(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler)
                         .authenticationEntryPoint(authenticationEntryPointHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

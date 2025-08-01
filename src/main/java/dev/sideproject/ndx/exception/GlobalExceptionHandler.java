@@ -1,7 +1,7 @@
 package dev.sideproject.ndx.exception;
 
-import dev.sideproject.ndx.dto.ErrorResponse;
-import dev.sideproject.ndx.dto.ValidationError;
+import dev.sideproject.ndx.dto.response.ErrorResponse;
+import dev.sideproject.ndx.dto.response.ValidationError;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice(annotations = RestController.class)
 public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {
+    public ResponseEntity<ValidationError> handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {
         Map<String, String> errors = exception.getBindingResult().getFieldErrors()
                 .stream().collect(Collectors.
                         toMap(FieldError::getField, FieldError::getDefaultMessage));
@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handleConstraintViolationException(final ConstraintViolationException exception) {
+    public ResponseEntity<ValidationError> handleConstraintViolationException(final ConstraintViolationException exception) {
         Map<String, String> errors = exception.getConstraintViolations().stream()
                 .collect(Collectors.toMap(v -> v.getPropertyPath().toString(), ConstraintViolation::getMessage));
         ValidationError validationError = ValidationError.builder().
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = AppException.class)
-    public ResponseEntity<?> handleAppException(final AppException exception) {
+    public ResponseEntity<ErrorResponse> handleAppException(final AppException exception) {
         return ResponseEntity.status(exception.getHttpStatus())
                 .body(exception.toResponse());
     }
